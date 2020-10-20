@@ -14,5 +14,8 @@ export default styles = StyleSheet.create({
         elevation: 5,
         borderRadius: 10,
         backgroundColor: 'white',
+    },
+    center: {
+        flex: 1, justifyContent: 'center', alignItems: 'center',
     }
 });

@@ -111,11 +111,7 @@ const EditProductScreen = props => {
 
     return (
         <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: 'white' }}>
-            <View style={{ margin: 10, padding: 10 }}>
-                <TextInput
-                    onChangeText={() => {}}  
-                    keyboardType='default'                 
-                />
+            <View style={{ margin: 10, padding: 10 }}>                
                 <ValidateTextInput
                     contentContainerStyle={styles.inputgroup}
                     inputStyle={styles.textinput}

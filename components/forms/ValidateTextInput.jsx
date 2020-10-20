@@ -30,7 +30,7 @@ const ValidateTextInput = props => {
     let initialValue = props.initialValue;
     if (!initialValue) {
         if (props.type === 'price') {
-            initialValue = 0;
+            initialValue = '0';
         } else {
             initialValue = '';
         }
