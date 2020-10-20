@@ -10,6 +10,8 @@ import ProductsOverviewScreen from '../screens/products/ProductsOverviewScreen';
 import ProductDetailsScreen from '../screens/products/ProductDetailsScreen';
 import CartScreen from '../screens/products/CartScreen';
 import OrdersScreen from '../screens/products/OrdersScreen';
+import UserProductsScreen from '../screens/user/UserProductsScreen';
+import EditProductScreen from '../screens/user/EditProductScreen';
 
 // styles
 import Colors from '../styles/colors';
@@ -39,9 +41,22 @@ const OrdersNavigator = createStackNavigator({
     Orders: OrdersScreen
 }, {
     navigationOptions: {
-        title: 'Your Orders',
+        title: 'Orders',
         drawerIcon: (drawerConfig) => (
             <Ionicons name={Platform.OS === 'android' ? 'md-list' : 'ios-list'} size={23} color={drawerConfig.tintColor} />
+        ) 
+    },
+    defaultNavigationOptions: defaultStackNavigationOptions,
+});
+
+const UserNavigator = createStackNavigator({
+    UserProducts: UserProductsScreen,
+    EditProduct: EditProductScreen,
+}, {
+    navigationOptions: {
+        title: 'Manage',
+        drawerIcon: (drawerConfig) => (
+            <Ionicons name={Platform.OS === 'android' ? 'md-contact' : 'ios-contact'} size={23} color={drawerConfig.tintColor} />
         ) 
     },
     defaultNavigationOptions: defaultStackNavigationOptions,
@@ -50,6 +65,7 @@ const OrdersNavigator = createStackNavigator({
 const rootNavigator = createDrawerNavigator({
     ProductsStack: ProductsNavigator,
     OrdersStack: OrdersNavigator,
+    UserStack: UserNavigator,
 }, {
     contentOptions: {
         activeTintColor: Colors.primary

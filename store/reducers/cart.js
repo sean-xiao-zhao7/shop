@@ -1,5 +1,7 @@
 import { ADD_TO_CART } from '../actions/cart';
 import { DELETE_FROM_CART } from '../actions/cart';
+import { ADD_ORDER } from '../actions/orders';
+import { DELETE_PRODUCT } from '../actions/products';
 
 // models
 import CartItem from '../../models/cartitem';
@@ -24,13 +26,13 @@ export default (state = initialState, action) => {
                     state.items[addedProduct.id].sum + price
                 );
                 return {
-                    ...state, 
-                    items: {...state.items, [addedProduct.id]: updatedCartItem},
+                    ...state,
+                    items: { ...state.items, [addedProduct.id]: updatedCartItem },
                     totalAmount: state.totalAmount + price
                 };
             } else {
                 const cartItem = new CartItem(1, price, title, price);
-                return {...state, items: {...state.items, [addedProduct.id]: cartItem}, totalAmount: state.totalAmount + price};
+                return { ...state, items: { ...state.items, [addedProduct.id]: cartItem }, totalAmount: state.totalAmount + price };
             };
         case DELETE_FROM_CART:
             let item = state.items[action.itemId];
@@ -41,8 +43,24 @@ export default (state = initialState, action) => {
                 item.quantity -= 1;
                 item.totalAmount -= item.price;
                 items[action.itemId] = item;
-            } 
-            return {...state, items: items};
+            }
+            return { ...state, items: items };
+        case ADD_ORDER:
+            return initialState;
+        case DELETE_PRODUCT:
+            if (!state.items[action.pid]) {
+                return state;
+            } else {
+                const items = { ...state.items };
+                const sum = state.items[action.pid].sum;
+                delete items[action.pid];
+
+                return {
+                    ...state,
+                    items: items,
+                    totalAmount: state.totalAmount - sum,
+                };
+            }
         default:
             return state;
     };

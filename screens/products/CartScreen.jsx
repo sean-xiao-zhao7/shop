@@ -45,7 +45,7 @@ const CartScreen = props => {
                     <PrettyText style={{ fontSize: 20, marginVertical: 20, color: Colors.primary }}>Cart Items</PrettyText>
                     {
                         items.map((item, index) => {
-                            return <CartItem item={item} key={index} />
+                            return <CartItem item={item} key={index} deletable={true} />
                         })
                     }
                 </View>
