@@ -30,7 +30,7 @@ export default (state = initialState, action) => {
                 action.productData.title,
                 action.productData.imageUrl,
                 action.productData.description,
-                action.productData.price,
+                parseFloat(action.productData.price),
             );
 
             return {

@@ -24,6 +24,7 @@ const formReducer = (state, action) => {
             ...state.inputValidities,
             [action.input]: action.isValid,
         }
+
         // update overall validity
         let updatedFormIsValid = true;
         for (const key in updatedValidaties) {
@@ -66,12 +67,12 @@ const EditProductScreen = props => {
         formIsValid: currentProduct ? true : false,
     });
 
-    const inputChangeHandler = useCallback((type, value, isValid) => {       
-        dispatchFormState({ 
+    const inputChangeHandler = useCallback((type, value, isValid) => {
+        dispatchFormState({
             type: FORM_INPUT_UPDATE,
-            value: input,
+            value: value,
             isValid: isValid,
-            input: type 
+            input: type
         });
     }, [dispatchFormState]);
 
@@ -111,53 +112,62 @@ const EditProductScreen = props => {
     return (
         <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ margin: 10, padding: 10 }}>
+                <TextInput
+                    onChangeText={() => {}}  
+                    keyboardType='default'                 
+                />
                 <ValidateTextInput
                     contentContainerStyle={styles.inputgroup}
                     inputStyle={styles.textinput}
                     title={'Title'}
-                    error={'Please enter a valid title.'}                    
+                    error={'Please enter a valid title.'}
                     keyboardType='default'
                     autoCapitalize="sentences"
                     returnKeyType='next'
-                    onInputChange={inputChangeHandler.bind(this, 'title')}
+                    onInputChange={inputChangeHandler}
                     initialValue={currentProduct ? currentProduct.title : ''}
                     initiallyValid={!!currentProduct}
-                />          
+                    required
+                    type={'title'}
+                />
                 <ValidateTextInput
                     contentContainerStyle={styles.inputgroup}
                     inputStyle={styles.textinput}
-                    title={'Title'}
-                    error={'Please enter a valid price.'}                    
-                    keyboardType='default'
+                    title={'Price'}
+                    error={'Please enter a valid price.'}
+                    keyboardType='decimal-pad'
                     autoCapitalize="sentences"
                     returnKeyType='next'
-                    onInputChange={inputChangeHandler.bind(this, 'price')}
+                    onInputChange={inputChangeHandler}
                     initialValue={currentProduct ? currentProduct.price : ''}
                     initiallyValid={!!currentProduct}
-                />              
+                    type={'price'}
+                />
                 <ValidateTextInput
                     contentContainerStyle={styles.inputgroup}
                     inputStyle={styles.textinput}
-                    title={'Title'}
-                    error={'Please enter a valid description.'}                    
+                    title={'Description'}
+                    error={'Please enter a valid description.'}
                     keyboardType='default'
                     autoCapitalize="sentences"
                     returnKeyType='next'
-                    onInputChange={inputChangeHandler.bind(this, 'description')}
+                    onInputChange={inputChangeHandler}
                     initialValue={currentProduct ? currentProduct.description : ''}
                     initiallyValid={!!currentProduct}
-                />                              
+                    type={'description'}
+                />
                 <ValidateTextInput
                     contentContainerStyle={styles.inputgroup}
                     inputStyle={styles.textinput}
-                    title={'Title'}
-                    error={'Please enter a valid image URL.'}                    
+                    title={'Image URL'}
+                    error={'Please enter a valid image URL.'}
                     keyboardType='default'
                     autoCapitalize="sentences"
                     returnKeyType='next'
-                    onInputChange={inputChangeHandler.bind(this, 'imageUrl')}
+                    onInputChange={inputChangeHandler}
                     initialValue={currentProduct ? currentProduct.imageUrl : ''}
                     initiallyValid={!!currentProduct}
+                    type={'imageUrl'}
                 />
             </View>
         </ScrollView>

@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect, useCallback } from 'react';
 import { TextInput, View } from 'react-native';
 
 // comps
@@ -7,15 +7,16 @@ import PrettyText from '../styles/PrettyText';
 const INPUT_CHANGE = 'INPUT_CHANGE';
 const INPUT_BLUR = 'INPUT_BLUR';
 
-const inputReducer = (state, action) => {
+const inputReducer = (state, action) => {    
     switch (action.type) {
         case INPUT_CHANGE:
             return {
                 ...state,
                 value: action.value,
-                isValid: isValid
+                isValid: action.isValid,
+                touched: false,
             };
-        case INPUT_BLUR: 
+        case INPUT_BLUR:
             return {
                 ...state,
                 touched: true,
@@ -26,19 +27,30 @@ const inputReducer = (state, action) => {
 };
 
 const ValidateTextInput = props => {
+    let initialValue = props.initialValue;
+    if (!initialValue) {
+        if (props.type === 'price') {
+            initialValue = 0;
+        } else {
+            initialValue = '';
+        }
+    } else if (props.type === 'price') {
+        initialValue = initialValue.toFixed(2);
+    }
+
     const [inputState, dispatch] = useReducer(inputReducer, {
-        value: props.initialValue ? props.initialValue : '',
+        value: initialValue,
         isValid: props.initiallyValid,
         touched: false,
     });
 
-    const { onInputChange } = props;
+    const { onInputChange, type } = props;
 
     useEffect(() => {
         if (inputState.touched) {
-            props.onInputChange(inputState.value, inputState.isValid);
+            props.onInputChange(type, inputState.value, inputState.isValid);
         }
-    }, [inputState, onInputChange]);
+    }, [inputState, onInputChange, type]);
 
     const textChangeHandler = text => {
         const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -66,10 +78,6 @@ const ValidateTextInput = props => {
         })
     };
 
-    const lostFocusHandler = () => {
-        dispatch({type: INPUT_BLUR});
-    }
-
     return (
         <View style={props.contentContainerStyle}>
             <PrettyText>{props.title}</PrettyText>
@@ -78,7 +86,9 @@ const ValidateTextInput = props => {
                 style={props.inputStyle}
                 value={inputState.value}
                 onChangeText={textChangeHandler}
-                onBlur={lostFocusHandler}
+                onBlur={() => {
+                    dispatch({type: INPUT_BLUR});
+                }}
             />
             {!inputState.isValid && <PrettyText>{props.error}</PrettyText>}
         </View>
