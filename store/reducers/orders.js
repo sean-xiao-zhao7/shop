@@ -9,10 +9,10 @@ export default (state = initialState, action) => {
     switch (action.type) {
         case ADD_ORDER:
             const order = new Order(
-                new Date().toString(),
+                action.orderData.id,
                 action.orderData.items,
                 action.orderData.totalAmount,
-                new Date(),
+                action.orderData.date,
             );
             return {...state, orders: state.orders.concat(order)};
         default: 

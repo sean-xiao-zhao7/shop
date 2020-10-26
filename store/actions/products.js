@@ -57,7 +57,7 @@ export const deleteProduct = productId => {
 export const addProduct = (title, description, imageUrl, price) => {
     const floatPrice = parseFloat(price);
     return async dispatch => {
-        await fetch('https://shop-84327.firebaseio.com/products.json', {
+        const response = await fetch('https://shop-84327.firebaseio.com/products.json', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -69,6 +69,12 @@ export const addProduct = (title, description, imageUrl, price) => {
                 floatPrice
             }),
         });
+
+        if (!response.ok) {
+            throw new Error('Something is wrong.');
+        }
+
+        const resData = await response.json();
 
         dispatch({
             type: ADD_PRODUCT,

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, View, Text, Button, Platform, ActivityIndicator } from 'react-native';
+import { FlatList, View, Alert, Button, Platform } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 // redux
@@ -66,7 +66,18 @@ const ProductsOverviewScreen = props => {
                 />
                 <Button
                     title='To Cart'
-                    onPress={() => dispatch(cartActions.addToCart(itemData.item))}
+                    onPress={() => {                        
+                        dispatch(cartActions.addToCart(itemData.item));
+                        Alert.alert(
+                            `Item ${itemData.item.title} was added to cart.`,
+                            '',
+                            [{
+                                text: 'Return to shopping',
+                                onPress: () => {},
+                                style: 'cancel'
+                            }]
+                        )
+                    }}
                     color={colors.primary}
                 />
             </ProductItem>

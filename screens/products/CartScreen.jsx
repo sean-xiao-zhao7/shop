@@ -1,8 +1,9 @@
-import React from 'react';
-import { Button, ScrollView, View, StyleSheet, Platform } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Button, ScrollView, View, StyleSheet, Alert } from 'react-native';
 
 // comps
 import PrettyText from '../../components/styles/PrettyText';
+import PrettyIndicator from '../../components/styles/PrettyIndicator';
 
 // redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -15,6 +16,8 @@ import css from '../../styles/css';
 
 const CartScreen = props => {
     const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const totalAmount = useSelector(state => state.cart.totalAmount);
     const items = useSelector(state => {
@@ -28,6 +31,26 @@ const CartScreen = props => {
         return array.sort((a, b) => a.id > b.id ? 1 : -1);
     });
 
+    const placeOrderHandler = useCallback(async () => {
+        setLoading(true);
+        try {
+            await dispatch(actions.addOrder(items, totalAmount));
+            Alert.alert(
+                `Your order has been placed.`,
+                '',
+                [{
+                    text: 'Return to cart',
+                    onPress: () => { },
+                    style: 'cancel'
+                }]
+            );
+        } catch (err) {
+            console.log(err.message);
+            setError(err.message);
+        }
+        setLoading(false);
+    }, [items, totalAmount]);
+
     return (
         <ScrollView>
             <View style={styles.screen}>
@@ -35,11 +58,10 @@ const CartScreen = props => {
                     <PrettyText>
                         Total: <PrettyText style={{ color: Colors.primary }}>$ {totalAmount.toFixed(2)}</PrettyText>
                     </PrettyText>
-                    <Button title={'Order Now'} disabled={items.length <= 0} color={Colors.primary}
-                        onPress={() => {
-                            dispatch(actions.addOrder(items, totalAmount));
-                        }}
-                    />
+                    {loading ? <PrettyIndicator />
+                        : <Button title={'Finalize Order'} disabled={items.length <= 0} color={Colors.primary}
+                        onPress={placeOrderHandler}
+                    />}
                 </View>
                 <View style={{ alignItems: 'center' }}>
                     <PrettyText style={{ fontSize: 20, marginVertical: 20, color: Colors.primary }}>Cart Items</PrettyText>
