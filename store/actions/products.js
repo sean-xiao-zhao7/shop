@@ -40,15 +40,24 @@ export const fetchProducts = () => {
 }
 
 export const deleteProduct = productId => {
-    return {
-        type: DELETE_PRODUCT,
-        pid: productId,
-    }
+    return async dispatch => {
+        const response = await fetch(
+            `https://shop-84327.firebaseio.com/products/${productId}.json`,
+            {
+                method: 'DELETE',                       
+            }
+        )
+        dispatch({
+            type: DELETE_PRODUCT,
+            pid: productId,
+        });
+    };
 }
 
 export const addProduct = (title, description, imageUrl, price) => {
+    const floatPrice = parseFloat(price);
     return async dispatch => {
-        const response = await fetch('https://shop-84327.firebaseio.com/products.json', {
+        await fetch('https://shop-84327.firebaseio.com/products.json', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -57,11 +66,9 @@ export const addProduct = (title, description, imageUrl, price) => {
                 title,
                 description,
                 imageUrl,
-                price
+                floatPrice
             }),
         });
-
-        const resData = await response.json();
 
         dispatch({
             type: ADD_PRODUCT,
@@ -70,21 +77,37 @@ export const addProduct = (title, description, imageUrl, price) => {
                 title: title,
                 description: description,
                 imageUrl: imageUrl,
-                price: price,
+                price: floatPrice,
             },
         })
     }
 }
 
 export const editProduct = (productId, title, description, imageUrl, price) => {
-    return {
-        type: EDIT_PRODUCT,
-        productId: productId,
-        productData: {
-            title: title,
-            description: description,
-            imageUrl: imageUrl,
-            price: price,
-        },
-    }
+    const floatPrice = parseFloat(price);
+    return async dispatch => {
+        await fetch(`https://shop-84327.firebaseio.com/products/${productId}.json`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title,
+                description,
+                imageUrl,
+                floatPrice
+            }),
+        });
+
+        dispatch({
+            type: EDIT_PRODUCT,
+            productId: productId,
+            productData: {
+                title: title,
+                description: description,
+                imageUrl: imageUrl,
+                price: floatPrice,
+            },
+        });
+    };
 }
