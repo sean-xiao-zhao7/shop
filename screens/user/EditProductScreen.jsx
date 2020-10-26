@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback, useReducer } from 'react';
-import { ScrollView, TextInput, View, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback, useReducer } from 'react';
+import { ScrollView, View, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 // redux
@@ -10,6 +10,7 @@ import { addProduct, editProduct } from '../../store/actions/products';
 import PrettyText from '../../components/styles/PrettyText';
 import MyHeaderButton from '../../components/header/MyHeaderButton';
 import ValidateTextInput from '../../components/forms/ValidateTextInput';
+import colors from '../../styles/colors';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const formReducer = (state, action) => {
@@ -42,6 +43,9 @@ const formReducer = (state, action) => {
 };
 
 const EditProductScreen = props => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState();
+
     const dispatch = useDispatch();
     const productId = props.navigation.getParam('productId');
     const products = useSelector(state => state.products.userProducts);
@@ -87,7 +91,7 @@ const EditProductScreen = props => {
         }
     }, [productId]);
 
-    const submitHandler = useCallback(() => {
+    const submitHandler = useCallback(async () => {
         if (!formState.formIsValid) {
             Alert.alert(
                 'Invalid input',
@@ -98,20 +102,44 @@ const EditProductScreen = props => {
             )
             return;
         }
-        if (!productId) {
-            dispatch(addProduct(formState.inputValues.title, formState.inputValues.description, formState.inputValues.imageUrl, formState.inputValues.price));
-        } else {
-            dispatch(editProduct(productId, formState.inputValues.title, formState.inputValues.description, formState.inputValues.imageUrl, formState.inputValues.price));
-        }
+        setIsLoading(true);
+        setError(null);
+        try {
+            if (!productId) {
+                await dispatch(addProduct(formState.inputValues.title, formState.inputValues.description, formState.inputValues.imageUrl, formState.inputValues.price));
+            } else {
+                await dispatch(editProduct(productId, formState.inputValues.title, formState.inputValues.description, formState.inputValues.imageUrl, formState.inputValues.price));
+            };
+            props.navigation.goBack();
+        } catch (err) {
+            setError(err.message);
+        };
+        setIsLoading(false);
     }, [productId, formState]);
+
+    useEffect(() => {
+        if (error) {
+            Alert.alert(
+                'Error',
+                error,
+                [{
+                    text: 'Confirm'
+                }]                
+            );
+        }
+    }, [error])
 
     useEffect(() => {
         props.navigation.setParams({ submitHandler: submitHandler });
     }, [submitHandler])
 
+    if (isLoading) {
+        return <ActivityIndicator size='large' color={colors.primary} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} />;
+    }
+
     return (
         <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: 'white' }}>
-            <View style={{ margin: 10, padding: 10 }}>                
+            <View style={{ margin: 10, padding: 10 }}>
                 <ValidateTextInput
                     contentContainerStyle={styles.inputgroup}
                     inputStyle={styles.textinput}
