@@ -22,10 +22,11 @@ const OrdersScreen = props => {
     const loadOrders = useCallback(() => {
         setLoading(true);
         dispatch(fetchOrders()).then(() => {
+            setLoading(false);
         }).catch((e) => {
             setError(e.message);
-        });
-        setLoading(false)
+            setLoading(false);
+        });        
     }, [dispatch, setLoading])
 
     useEffect(() => {
@@ -56,6 +57,8 @@ const OrdersScreen = props => {
         <FlatList
             data={orders}
             renderItem={renderOrder}
+            onRefresh={loadOrders}
+            refreshing={loading}
         />
     );
 };

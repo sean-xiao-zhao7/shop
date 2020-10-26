@@ -19,7 +19,8 @@ import PrettyText from '../../components/styles/PrettyText';
 
 const ProductsOverviewScreen = props => {
     // states
-    const [loading, setIsLoading] = useState(false);
+    const [loading, setIsLoading] = useState(true);
+    const [loadingFlatList, setloadingFlatList] = useState(false);
     const [error, setError] = useState(false);
 
     // setup redux
@@ -31,16 +32,21 @@ const ProductsOverviewScreen = props => {
         return props.navigation.navigate('ProductDetails', { productId: id, productTitle: title });
     };
 
-    const loadProducts = useCallback(() => {
-        setIsLoading(true);
-        dispatch(fetchProducts()).then(() => { setIsLoading(false) }).catch((e) => {
+    const loadProducts = useCallback(async () => {
+        setloadingFlatList(true);     
+        dispatch(fetchProducts()).then(() => {
+            setloadingFlatList(false);
+            setIsLoading(false); 
+        }).catch((e) => {
             setError(e.message);
+            setloadingFlatList(false);
             setIsLoading(false);
-        });
+        });        
     }, [dispatch, setIsLoading])
 
     // fetch products
-    useEffect(() => {
+    useEffect(() => {        
+        setIsLoading(true);
         const willFocusSub = props.navigation.addListener('willFocus', loadProducts);
         return () => {
             willFocusSub.remove();
@@ -48,6 +54,7 @@ const ProductsOverviewScreen = props => {
     }, [loadProducts]);
 
     useEffect(() => {
+        setIsLoading(true);
         loadProducts();
     }, [dispatch])
 
@@ -101,6 +108,8 @@ const ProductsOverviewScreen = props => {
         <FlatList
             data={products}
             renderItem={renderProduct}
+            onRefresh={loadProducts}
+            refreshing={loadingFlatList}
         />
     );
 };
