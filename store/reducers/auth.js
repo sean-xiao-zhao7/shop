@@ -1,0 +1,1 @@
+import { REGISTER } from '../actions/auth';
