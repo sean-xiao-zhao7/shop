@@ -40,9 +40,10 @@ export const fetchProducts = () => {
 }
 
 export const deleteProduct = productId => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
+        const userToken = getState().auth.token;
         const response = await fetch(
-            `https://shop-84327.firebaseio.com/products/${productId}.json`,
+            `https://shop-84327.firebaseio.com/products/${productId}.json?auth=${userToken}`,
             {
                 method: 'DELETE',                       
             }
@@ -56,8 +57,9 @@ export const deleteProduct = productId => {
 
 export const addProduct = (title, description, imageUrl, price) => {
     const floatPrice = parseFloat(price);
-    return async dispatch => {
-        const response = await fetch('https://shop-84327.firebaseio.com/products.json', {
+    return async (dispatch, getState) => {
+        const userToken = getState().auth.token;
+        const response = await fetch(`https://shop-84327.firebaseio.com/products.json?auth=${userToken}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -91,8 +93,9 @@ export const addProduct = (title, description, imageUrl, price) => {
 
 export const editProduct = (productId, title, description, imageUrl, price) => {
     const floatPrice = parseFloat(price);
-    return async dispatch => {
-        await fetch(`https://shop-84327.firebaseio.com/products/${productId}.json`, {
+    return async (dispatch, getState) => {
+        const userToken = getState().auth.token;
+        const response = await fetch(`https://shop-84327.firebaseio.com/products/${productId}.json?auth=${userToken}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -104,6 +107,12 @@ export const editProduct = (productId, title, description, imageUrl, price) => {
                 floatPrice
             }),
         });
+
+        //console.log(await response.json());
+        if (!response.ok) {
+            response = await response.json();
+            throw new Error(response.error.message);
+        }
 
         dispatch({
             type: EDIT_PRODUCT,

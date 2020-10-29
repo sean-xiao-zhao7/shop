@@ -1,16 +1,18 @@
-import React, { useReducer, useCallback } from 'react';
+import React, { useReducer, useCallback, useState } from 'react';
 import { ScrollView, View, KeyboardAvoidingView, Button, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // redux
-import { registerAction } from '../../store/actions/auth';
+import { registerAction, loginAction } from '../../store/actions/auth';
 import { useDispatch } from 'react-redux';
 
 // comps
 import ValidateTextInput from '../../components/forms/ValidateTextInput';
+import PrettyIndicator from '../../components/styles/PrettyIndicator';
 
 // styles
 import colors from '../../styles/colors';
+import PrettyText from '../../components/styles/PrettyText';
 
 // form validation reducer
 const UPDATE_LOGIN_FORM = 'UPDATE_LOGIN_FORM';
@@ -45,13 +47,12 @@ const loginReducer = (state, action) => {
 const LoginScreen = props => {
     const dispatch = useDispatch();
 
-    // funcs
-    const loginHandler = useCallback(() => {
-        dispatch(registerAction(formState.values.email, formState.values.password));
-    }, [formState]);
+    // states
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // use reducer
-    const [formState, dispatchFormState] = useReducer(loginReducer, {
+     // use reducer
+     const [formState, dispatchFormState] = useReducer(loginReducer, {
         values: {
             email: '',
             password: '',
@@ -63,6 +64,29 @@ const LoginScreen = props => {
         allValid: false,
     });
 
+    // funcs
+    const loginHandler = useCallback(async () => {        
+        try {            
+            setLoading(true);
+            await dispatch(loginAction(formState.values.email, formState.values.password));
+            props.navigation.navigate('Shop');
+        } catch (err) {
+            setError(err.message);
+            setLoading(false);
+        }        
+    }, [formState]);
+
+    const registerHandler = useCallback(async () => {
+        setLoading(true);
+        try {            
+            await dispatch(registerAction(formState.values.email, formState.values.password));  
+            props.navigation.navigate('Shop');
+        } catch (err) {
+            setError(err.message);
+            setLoading(false);
+        }        
+    }, [formState]);
+
     const inputChangeHandler = useCallback((fieldType, value, isValid) => {
         dispatchFormState({
             type: UPDATE_LOGIN_FORM,
@@ -71,6 +95,11 @@ const LoginScreen = props => {
             fieldType: fieldType
         });
     }, [dispatchFormState]);
+
+    // loading
+    if (loading) {
+        return <PrettyIndicator />;
+    }
 
     return (
         <KeyboardAvoidingView
@@ -98,11 +127,12 @@ const LoginScreen = props => {
                         autoCapitalize='none'
                         error='Please enter a valid email.'
                         onInputChange={inputChangeHandler}
-                        initialValue=''
+                        initialValue={formState.values.email}
                         inputStyle={styles.loginField}
                         initiallyValid
                         placeholder='Email'
                         type={'email'}
+                        value={formState.values.email}
                     />
                     <ValidateTextInput
                         id='password'
@@ -115,11 +145,12 @@ const LoginScreen = props => {
                         autoCapitalize='none'
                         error='Please enter at least 8 characters.'
                         onInputChange={inputChangeHandler}
-                        initialValue=''
+                        initialValue={formState.values.password}
                         inputStyle={styles.loginField}
                         initiallyValid
                         placeholder='Password'
                         type={'password'}
+                        value={formState.values.password}
                     />
                     <Button
                         title='Login to your account'
@@ -129,7 +160,9 @@ const LoginScreen = props => {
                     <Button
                         title='Register now'
                         color={colors.primary}
+                        onPress={registerHandler}
                     />
+                    {error ? <PrettyText>{error}</PrettyText> : null}
                 </ScrollView>
             </LinearGradient>
         </KeyboardAvoidingView>

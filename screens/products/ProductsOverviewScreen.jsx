@@ -30,7 +30,7 @@ const ProductsOverviewScreen = props => {
     // functions
     const onSelect = (id, title) => {
         return props.navigation.navigate('ProductDetails', { productId: id, productTitle: title });
-    };
+    };    
 
     const loadProducts = useCallback(async () => {
         setloadingFlatList(true);     

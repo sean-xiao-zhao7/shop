@@ -1,8 +1,7 @@
 import React from 'react';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createDrawerNavigator } from 'react-navigation-drawer';
-import { createSwitchNavigator } from 'react-navigation-switch-transitioner';
 import { Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -74,12 +73,12 @@ const shopNavigator = createDrawerNavigator({
     }
 });
 
-const AuthNavigator = createStackNavigator({
-    Login: LoginScreen, 
-});
+const authNavigator = createStackNavigator({
+    Login: LoginScreen,
+}, { defaultNavigationOptions: defaultStackNavigationOptions });
 
 const rootNavigator = createSwitchNavigator({
-    Auth: AuthNavigator,
+    Auth: authNavigator,
     Shop: shopNavigator,
 });
 
