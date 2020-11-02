@@ -1,4 +1,4 @@
-import { REGISTER, LOGIN } from '../actions/auth';
+import { AUTO_LOGIN, LOGOUT } from '../actions/auth';
 
 const init = {
     token: null,
@@ -7,18 +7,14 @@ const init = {
 
 export default (state = init, action) => {
     switch (action.type) {
-        case REGISTER:
+        case AUTO_LOGIN:
             return {
                 ...state,
-                token: action.token,
+                token: action.userToken,
                 userId: action.userId,
             };
-        case LOGIN:
-            return {
-                ...state,
-                token: action.token,
-                userId: action.userId,
-            };
+        case LOGOUT:
+            return init;
         default:
             return state;
     }

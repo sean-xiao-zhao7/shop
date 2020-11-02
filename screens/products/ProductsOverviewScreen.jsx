@@ -26,7 +26,7 @@ const ProductsOverviewScreen = props => {
     // setup redux
     const products = useSelector(state => state.products.availableProducts);
     const dispatch = useDispatch();
-
+    
     // functions
     const onSelect = (id, title) => {
         return props.navigation.navigate('ProductDetails', { productId: id, productTitle: title });

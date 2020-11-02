@@ -1,8 +1,8 @@
 import React from 'react';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import { createDrawerNavigator } from 'react-navigation-drawer';
-import { Platform } from 'react-native';
+import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
+import { Platform, Button, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 // screens
@@ -13,9 +13,16 @@ import OrdersScreen from '../screens/products/OrdersScreen';
 import UserProductsScreen from '../screens/user/UserProductsScreen';
 import EditProductScreen from '../screens/user/EditProductScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
+import AutoLoginScreen from '../screens/auth/AutoLoginScreen';
 
 // styles
 import Colors from '../styles/colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import colors from '../styles/colors';
+
+// redux
+import { useDispatch } from 'react-redux';
+import { logoutAction } from '../store/actions/auth';
 
 const defaultStackNavigationOptions = {
     headerStyle: {
@@ -70,7 +77,26 @@ const shopNavigator = createDrawerNavigator({
 }, {
     contentOptions: {
         activeTintColor: Colors.primary
-    }
+    },
+    contentComponent: props => {
+        const dispatch = useDispatch();
+        return (
+            <View style={{flex: 1}}>
+                <SafeAreaView
+                    forceInset={{top: 'always', horizontal: 'never'}}
+                >
+                    <DrawerItems {...props} />
+                    <Button 
+                        title='Logout'
+                        color={colors.primary}
+                        onPress={() => {
+                            dispatch(logoutAction());
+                        }}
+                    />
+                </SafeAreaView>
+            </View>
+        )
+    },
 });
 
 const authNavigator = createStackNavigator({
@@ -78,6 +104,7 @@ const authNavigator = createStackNavigator({
 }, { defaultNavigationOptions: defaultStackNavigationOptions });
 
 const rootNavigator = createSwitchNavigator({
+    AutoLogin: AutoLoginScreen,
     Auth: authNavigator,
     Shop: shopNavigator,
 });

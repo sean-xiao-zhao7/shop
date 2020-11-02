@@ -8,11 +8,11 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case SET_PRODUCTS:
+        case SET_PRODUCTS:            
             return {
                 ...state,
                 availableProducts: action.products,
-                userProducts: action.products.filter(product => product.ownerId === 'u1'),
+                userProducts: action.products.filter(product => product.ownerId === action.userId),
             };
         case DELETE_PRODUCT:
             return {
@@ -31,7 +31,7 @@ export default (state = initialState, action) => {
         case ADD_PRODUCT:
             const newProduct = new Product(
                 action.productData.id,
-                'u1',
+                action.productData.userId,
                 action.productData.title,
                 action.productData.imageUrl,
                 action.productData.description,
